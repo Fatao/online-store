@@ -8,31 +8,31 @@
 
 <div class="info-grid">
     <div class="info-box">
-        <div class="info-label">Клиент</div>
+        <div class="info-label">Клиент: </div>
         <div class="info-value">{{ $order->customer->name ?? '—' }}</div>
-        <div class="muted">{{ $order->customer->email ?? '' }}</div>
+        <div class="muted">{{ $order->customer->email ??  '' }}</div>
     </div>
     <div class="info-box">
-        <div class="info-label">Дата заказа</div>
+        <div class="info-label">Дата заказа: </div>
         <div class="info-value">{{ $order->sale_date->format('d.m.Y') }}</div>
     </div>
     <div class="info-box">
-        <div class="info-label">Дата доставки</div>
+        <div class="info-label">Дата доставки: </div>
         <div class="info-value">{{ $order->delivery_date?->format('d.m.Y') ?? '—' }}</div>
     </div>
 </div>
 
 <div class="info-grid">
     <div class="info-box">
-        <div class="info-label">Адрес доставки</div>
+        <div class="info-label">Адрес доставки: </div>
         <div class="info-value">{{ $order->shipping_address }}</div>
     </div>
     <div class="info-box">
-        <div class="info-label">Телефон</div>
+        <div class="info-label">Телефон: </div>
         <div class="info-value">{{ $order->shipping_phone }}</div>
     </div>
     <div class="info-box">
-        <div class="info-label">Текущий статус</div>
+        <div class="info-label">Текущий статус: </div>
         <div class="info-value"><span class="badge">{{ \App\Models\Order::statusLabels()[$order->status] ?? $order->status }}</span></div>
     </div>
 </div>

@@ -4,30 +4,44 @@
 <div class="detail-wrap">
 
     <div class="breadcrumb">
-        <a href="{{ route('home') }}">Главная</a> 
-        <a href="{{ route('inventory.index') }}">Каталог</a> 
-        <a href="{{ route('brands.show', $car->brand) }}">{{ $car->brand->name }}</a> 
+        <a href="{{ route('home') }}">Главная</a> /
+        <a href="{{ route('inventory.index') }}">Каталог</a> /
+        <a href="{{ route('brands.show', $car->brand) }}">{{ $car->brand->name }}</a> /
         {{ $car->name }}
     </div>
 
     <div class="detail-layout">
         {{-- Gallery --}}
         <div>
+            {{-- Main image --}}
             <div class="detail-gallery-main">
                 @if($car->image)
-                    <img src="{{ asset('storage/' . $car->image) }}" alt="{{ $car->name }}" class="detail-img" id="main-image">
+                    <img src="{{ asset('files/' . $car->image) }}"
+                         alt="{{ $car->name }}"
+                         class="detail-img"
+                         id="main-image"
+                         onerror="this.src='';this.alt='Фото недоступно';">
                 @else
                     <div class="detail-img-placeholder">🚗</div>
                 @endif
             </div>
 
-            @if($car->gallery && count($car->gallery))
-                <div class="detail-gallery-thumbs">
-                    @if($car->image)
-                        <img src="{{ asset('storage/' . $car->image) }}" class="detail-thumb active" onclick="document.getElementById('main-image').src=this.src">
-                    @endif
-                    @foreach($car->gallery as $img)
-                        <img src="{{ asset('storage/' . $img) }}" class="detail-thumb" onclick="document.getElementById('main-image').src=this.src">
+            {{-- Thumbnails --}}
+            @php
+                $allImages = [];
+                if ($car->image) $allImages[] = $car->image;
+                if ($car->gallery && count($car->gallery)) {
+                    foreach ($car->gallery as $g) $allImages[] = $g;
+                }
+            @endphp
+
+            @if(count($allImages) > 1)
+                <div class="detail-gallery-thumbs" style="margin-top:12px;">
+                    @foreach($allImages as $i => $img)
+                        <img src="{{ asset('files/' . $img) }}"
+                             class="detail-thumb {{ $i === 0 ? 'active' : '' }}"
+                             onclick="switchImage(this, '{{ asset('files/' . $img) }}')"
+                             onerror="this.style.display='none';">
                     @endforeach
                 </div>
             @endif
@@ -40,22 +54,40 @@
 
             <div class="detail-specs-row">
                 @if($car->year)
-                    <div class="spec-box"><div class="spec-box-value">{{ $car->year }}</div><div class="spec-box-label">Год</div></div>
+                    <div class="spec-box">
+                        <div class="spec-box-value">{{ $car->year }}</div>
+                        <div class="spec-box-label">Год</div>
+                    </div>
                 @endif
                 @if($car->horsepower)
-                    <div class="spec-box"><div class="spec-box-value">{{ $car->horsepower }}</div><div class="spec-box-label">Л.с.</div></div>
+                    <div class="spec-box">
+                        <div class="spec-box-value">{{ $car->horsepower }}</div>
+                        <div class="spec-box-label">Л.с.</div>
+                    </div>
                 @endif
                 @if($car->mileage !== null)
-                    <div class="spec-box"><div class="spec-box-value">{{ number_format($car->mileage, 0, '', ' ') }}</div><div class="spec-box-label">Км</div></div>
+                    <div class="spec-box">
+                        <div class="spec-box-value">{{ number_format($car->mileage, 0, '', ' ') }}</div>
+                        <div class="spec-box-label">Км</div>
+                    </div>
                 @endif
                 @if($car->fuel_type)
-                    <div class="spec-box"><div class="spec-box-value">{{ $car->fuel_type }}</div><div class="spec-box-label">Топливо</div></div>
+                    <div class="spec-box">
+                        <div class="spec-box-value">{{ $car->fuel_type }}</div>
+                        <div class="spec-box-label">Топливо</div>
+                    </div>
                 @endif
                 @if($car->transmission)
-                    <div class="spec-box"><div class="spec-box-value">{{ $car->transmission }}</div><div class="spec-box-label">Трансмиссия</div></div>
+                    <div class="spec-box">
+                        <div class="spec-box-value">{{ $car->transmission }}</div>
+                        <div class="spec-box-label">КПП</div>
+                    </div>
                 @endif
                 @if($car->body_type)
-                    <div class="spec-box"><div class="spec-box-value">{{ $car->body_type }}</div><div class="spec-box-label">Кузов</div></div>
+                    <div class="spec-box">
+                        <div class="spec-box-value">{{ $car->body_type }}</div>
+                        <div class="spec-box-label">Кузов</div>
+                    </div>
                 @endif
             </div>
 
@@ -65,10 +97,14 @@
             </div>
 
             @if($car->color)
-                <p class="muted" style="margin-bottom:16px;">Цвет: {{ $car->color }}</p>
+                <p style="color:#8d8a86; margin-bottom:16px; font-size:0.88rem;">
+                    Цвет: <span style="color:#ece9e4;">{{ $car->color }}</span>
+                </p>
             @endif
 
-            <p class="detail-desc">{{ $car->description }}</p>
+            @if($car->description)
+                <p class="detail-desc">{{ $car->description }}</p>
+            @endif
 
             @if($car->featuresList())
                 <div class="features-list">
@@ -78,16 +114,16 @@
                 </div>
             @endif
 
-            <form action="{{ route('cart.add') }}" method="POST">
+            <form action="{{ route('cart.add') }}" method="POST" style="margin-top:20px;">
                 @csrf
                 <input type="hidden" name="car_id" value="{{ $car->id }}">
                 <div class="qty-row">
-                    <label style="margin:0;">Кол-во:</label>
+                    <label style="margin:0; color:#8d8a86;">Кол-во:</label>
                     <input type="number" name="qty" value="1" min="1" class="qty-input">
                 </div>
                 <div class="detail-actions">
                     <button type="submit" class="btn-primary btn-large">Купить сейчас</button>
-                    <a href="{{ route('finance.index') }}?car_id={{ $car->id }}" class="btn-outline btn-large">Рассчитать финансирование</a>
+                    <a href="{{ route('finance.index') }}?car_id={{ $car->id }}" class="btn-outline btn-large">Рассчитать кредит</a>
                 </div>
             </form>
         </div>
@@ -95,9 +131,12 @@
 
     {{-- Related --}}
     @if($related->isNotEmpty())
-        <section class="section" style="padding: 40px 0;">
+        <section style="padding:40px 0 20px;">
             <div class="section-header">
-                <h2 class="section-title" style="font-size:1.4rem;">Другие автомобили {{ $car->brand->name }}</h2>
+                <div>
+                    <div class="section-tag">// {{ $car->brand->name }}</div>
+                    <h2 class="section-title" style="font-size:1.4rem;">Другие автомобили бренда</h2>
+                </div>
             </div>
             <div class="cars-grid">
                 @foreach($related as $r)
@@ -111,7 +150,9 @@
     <div class="reviews-section">
         <h2 class="section-title" style="font-size:1.4rem; margin-bottom:8px;">Отзывы</h2>
         <div class="avg-rating">
-            Средняя оценка: {{ $car->averageRating() }} / 5 ({{ $car->reviews->count() }} отзывов)
+            Средняя оценка:
+            <span style="color:#c9a86a; font-weight:600;">{{ $car->averageRating() }}</span> / 5
+            <span style="color:#555;">({{ $car->reviews->count() }} отзывов)</span>
         </div>
 
         <div class="reviews-list">
@@ -120,7 +161,7 @@
                     <div class="review-header">
                         <div class="review-author">
                             <div class="avatar">{{ mb_substr($review->customer->name ?? '?', 0, 1) }}</div>
-                            <span>{{ $review->customer->name ?? 'Гость' }}</span>
+                            <span style="color:#ece9e4;">{{ $review->customer->name ?? 'Гость' }}</span>
                         </div>
                         <div>
                             @for($i = 1; $i <= 5; $i++)
@@ -132,7 +173,7 @@
                     <div class="review-date">{{ $review->created_at->format('d.m.Y') }}</div>
                 </div>
             @empty
-                <p class="muted">Отзывов пока нет. Будьте первым!</p>
+                <p style="color:#555; font-size:0.9rem;">Отзывов пока нет. Будьте первым!</p>
             @endforelse
         </div>
 
@@ -142,7 +183,6 @@
                 <form action="{{ route('reviews.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="car_id" value="{{ $car->id }}">
-
                     <div class="form-group">
                         <label>Оценка</label>
                         <div class="star-picker">
@@ -152,19 +192,30 @@
                             @endfor
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label>Комментарий</label>
-                        <textarea name="comment" placeholder="Поделитесь впечатлениями об автомобиле..." required></textarea>
+                        <textarea name="comment" placeholder="Поделитесь впечатлениями..." required></textarea>
                     </div>
-
                     <button type="submit" class="btn-primary-sm">Отправить отзыв</button>
                 </form>
             </div>
         @else
-            <p class="muted">Чтобы оставить отзыв, <a href="{{ route('login') }}">войдите в аккаунт</a>.</p>
+            <p style="color:#555; font-size:0.88rem;">
+                Чтобы оставить отзыв, <a href="{{ route('login') }}" style="color:#c9a86a;">войдите в аккаунт</a>.
+            </p>
         @endauth
     </div>
 
 </div>
+
+@push('scripts')
+<script>
+function switchImage(thumb, src) {
+    document.getElementById('main-image').src = src;
+    document.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
+    thumb.classList.add('active');
+}
+</script>
+@endpush
+
 @endsection

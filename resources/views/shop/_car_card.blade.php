@@ -1,7 +1,10 @@
 <div class="car-card">
     <div class="car-card-img">
         @if($car->image)
-            <img src="{{ asset('storage/' . $car->image) }}" alt="{{ $car->name }}">
+            <img src="{{ asset('files/' . $car->image) }}"
+                 alt="{{ $car->name }}"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <div class="car-img-placeholder" style="display:none;">🚗</div>
         @else
             <div class="car-img-placeholder">🚗</div>
         @endif
@@ -11,8 +14,8 @@
         <a href="{{ route('inventory.show', $car) }}" class="car-name">{{ $car->name }}</a>
         <div class="car-meta">
             @if($car->year)<span>{{ $car->year }}</span>@endif
-            @if($car->horsepower)<span>· {{ $car->horsepower }} л.с.</span>@endif
-            @if($car->transmission)<span>· {{ $car->transmission }}</span>@endif
+            @if($car->horsepower)<span>&middot; {{ $car->horsepower }} л.с.</span>@endif
+            @if($car->transmission)<span>&middot; {{ $car->transmission }}</span>@endif
         </div>
         <div class="car-price-row">
             <div>
