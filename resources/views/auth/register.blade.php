@@ -30,6 +30,7 @@
             <div class="form-group">
                 <label for="email">EMAIL</label>
                 <input type="email" id="email" name="email"
+
                        value="{{ old('email') }}"
                        placeholder="you@example.com"
                        required>
@@ -59,15 +60,14 @@
 
             {{-- Captcha --}}
             <div class="form-group">
-                <label>КОД С КАРТИНКИ</label>
+                <label>ОТВЕТЬТЕ НА ПРИМЕР</label>
                 <div class="captcha-row">
-                    <img src="{{ route('captcha') }}" alt="captcha" class="captcha-img" id="captcha-img">
-                    <button type="button" class="captcha-refresh" onclick="
-                        document.getElementById('captcha-img').src='{{ route('captcha') }}?'+Date.now()
-                    " title="Обновить">↻</button>
+                    <span id="captcha-question" class="captcha-question">Загрузка…</span>
+
+                    <button type="button" class="captcha-refresh" onclick="loadCaptcha()" title="Обновить">↻</button>
                 </div>
                 <input type="text" name="captcha"
-                       placeholder="Введите символы с картинки"
+                       placeholder="Введите ответ"
                        autocomplete="off"
                        value="{{ old('captcha') }}">
                 @error('captcha')
@@ -84,4 +84,15 @@
         </div>
     </div>
 </div>
+
+<script>
+function loadCaptcha() {
+    fetch('{{ route('captcha') }}')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('captcha-question').textContent = data.question;
+        });
+}
+document.addEventListener('DOMContentLoaded', loadCaptcha);
+</script>
 @endsection
