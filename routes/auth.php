@@ -4,47 +4,31 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 
-// Captcha image generator — session saved before image output
+// Math captcha — no GD required, uses arithmetic from Lab Work 1
 Route::get('/captcha', function () {
-    $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
-    $code  = '';
-    for ($i = 0; $i < 6; $i++) {
-        $code .= $chars[random_int(0, strlen($chars) - 1)];
-    }
+    $operations = ['+', '-', '*'];
+    $op  = $operations[array_rand($operations)];
+    $a   = random_int(2, 9);
+    $b   = random_int(1, 9);
 
-    // Save to session BEFORE any output and BEFORE exit
-    session(['captcha_code' => strtolower($code)]);
-    session()->save(); // critical: force save so exit doesn't lose it
+    // Prevent negative results for subtraction
+    if ($op === '-' && $b > $a) [$a, $b] = [$b, $a];
 
-    $img   = imagecreatetruecolor(160, 50);
-    $bg    = imagecolorallocate($img, 14, 14, 14);
-    $noise = imagecolorallocate($img, 40, 40, 40);
-    imagefill($img, 0, 0, $bg);
+    $answer = match($op) {
+        '+'  => $a + $b,
+        '-'  => $a - $b,
+        '*'  => $a * $b,
+    };
 
-    for ($i = 0; $i < 300; $i++) {
-        imagesetpixel($img, random_int(0, 159), random_int(0, 49), $noise);
-    }
-    for ($i = 0; $i < 4; $i++) {
-        imageline($img, random_int(0, 160), 0, random_int(0, 160), 50,
-            imagecolorallocate($img, 30, 30, 30));
-    }
+    session(['captcha_code' => (string) $answer]);
+    session()->save();
 
-    $font = 5;
-    for ($i = 0; $i < strlen($code); $i++) {
-        $col = imagecolorallocate($img, random_int(0, 80), random_int(180, 255), random_int(80, 180));
-        imagestring($img, $font, 10 + $i * (imagefontwidth($font) + 4), random_int(8, 22), $code[$i], $col);
-    }
-
-    ob_start();
-    imagepng($img);
-    $imageData = ob_get_clean();
-    imagedestroy($img);
-
-    return response($imageData, 200)
-        ->header('Content-Type', 'image/png')
-        ->header('Cache-Control', 'no-store, no-cache, must-revalidate')
-        ->header('Pragma', 'no-cache');
-
+    return response()->json([
+        'question' => "{$a} {$op} {$b} = ?",
+        'a'        => $a,
+        'op'       => $op,
+        'b'        => $b,
+    ]);
 })->name('captcha');
 
 // Guest only
