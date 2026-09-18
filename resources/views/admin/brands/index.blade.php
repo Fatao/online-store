@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('page-title', '// Бренды')
+@section('page-title', ' Бренды')
 @section('content')
 
 <div class="card">
