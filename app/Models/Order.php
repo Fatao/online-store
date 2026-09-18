@@ -40,4 +40,23 @@ class Order extends Model
             'cancelled'  => 'Отменён',
         ];
     }
+
+    /** Human-readable label for this order's status */
+    public function statusLabel(): string
+    {
+        return self::statusLabels()[$this->status] ?? $this->status;
+    }
+
+    /** CSS color for this order's status */
+    public function statusColor(): string
+    {
+        return match($this->status) {
+            'pending'    => '#c9a86a',
+            'processing' => '#00ccff',
+            'shipped'    => '#8888ff',
+            'delivered'  => '#44cc88',
+            'cancelled'  => '#e2566b',
+            default      => '#8d8a86',
+        };
+    }
 }
