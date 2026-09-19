@@ -88,7 +88,7 @@
 
             @auth
                 <div class="nav-user">
-                    <span class="nav-username">{{ auth()->user()->name }}</span>
+                    <a href="{{ route('profile.show') }}" class="nav-username" style="text-decoration:none;color:var(--text);">{{ auth()->user()->name }}</a>
                     @if(auth()->user()->is_regular)<span class="badge-regular">★ VIP</span>@endif
                     <a href="{{ route('orders.index') }}">Заказы</a>
                     @if(auth()->user()->isAdmin())
