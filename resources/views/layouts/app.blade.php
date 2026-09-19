@@ -70,7 +70,7 @@
 
 <nav class="navbar">
     <div class="nav-container">
-        <a href="{{ route('home') }}" class="nav-logo">// <span>DRIVE ELITE</span></a>
+        <a href="{{ route('home') }}" class="nav-logo"> <span>DRIVE ELITE</span></a>
 
         <div class="nav-links">
             <a href="{{ route('home') }}"            class="{{ request()->routeIs('home') ? 'active' : '' }}">Главная</a>
@@ -146,7 +146,7 @@
     <div class="footer-container">
         <div class="footer-top">
             <div>
-                <div class="footer-logo">// DRIVE ELITE</div>
+                <div class="footer-logo"> DRIVE ELITE</div>
                 <p class="footer-tagline">Премиальные автомобили для тех, кто выбирает совершенство.<br>Driven by Excellence. Defined by Luxury.</p>
             </div>
             <div class="footer-links-col">
@@ -169,7 +169,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <div>// DRIVE ELITE © {{ date('Y') }}. Все права защищены.</div>
+            <div> DRIVE ELITE © {{ date('Y') }}. Все права защищены.</div>
             <div class="footer-credit">Разработано и спроектировано <span>Abdulrahman Fatao</span> — 2024–2026</div>
         </div>
     </div>
