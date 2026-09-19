@@ -1,10 +1,9 @@
 <div class="car-card">
     <div class="car-card-img">
         @if($car->image)
-            <img src="{{ asset('files/' . $car->image) }}"
+            <img src="{{ asset('storage/' . $car->image) }}"
                  alt="{{ $car->name }}"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-            <div class="car-img-placeholder" style="display:none;">🚗</div>
+                 onerror="this.onerror=null;this.src='{{ asset('files/' . $car->image) }}'">
         @else
             <div class="car-img-placeholder">🚗</div>
         @endif
@@ -19,7 +18,7 @@
         </div>
         <div class="car-price-row">
             <div>
-                <div class="car-price">{{ number_format($car->price, 0, ',', ' ') }} ₽</div>
+                <div class="car-price">{{ number_format($car->price,0,',',' ') }} ₽</div>
                 <div class="car-unit">за {{ $car->unit }}</div>
             </div>
             <form action="{{ route('cart.add') }}" method="POST">

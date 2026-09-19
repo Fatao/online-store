@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -27,10 +26,10 @@ class BrandController extends Controller
 
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('brands', 'public');
+            $this->copyToPublic($data['logo']);
         }
 
         Brand::create($data);
-
         return redirect()->route('admin.brands.index')->with('success', 'Бренд добавлен.');
     }
 
@@ -47,12 +46,13 @@ class BrandController extends Controller
         if ($request->hasFile('logo')) {
             if ($brand->logo) {
                 Storage::disk('public')->delete($brand->logo);
+                $this->deleteFromPublic($brand->logo);
             }
             $data['logo'] = $request->file('logo')->store('brands', 'public');
+            $this->copyToPublic($data['logo']);
         }
 
         $brand->update($data);
-
         return redirect()->route('admin.brands.index')->with('success', 'Бренд обновлён.');
     }
 
@@ -60,11 +60,23 @@ class BrandController extends Controller
     {
         if ($brand->logo) {
             Storage::disk('public')->delete($brand->logo);
+            $this->deleteFromPublic($brand->logo);
         }
-
         $brand->delete();
-
         return redirect()->route('admin.brands.index')->with('success', 'Бренд удалён.');
+    }
+
+    private function copyToPublic(string $path): void
+    {
+        $dir = public_path('files/' . dirname($path));
+        if (!is_dir($dir)) mkdir($dir, 0755, true);
+        @copy(storage_path('app/public/' . $path), public_path('files/' . $path));
+    }
+
+    private function deleteFromPublic(string $path): void
+    {
+        $full = public_path('files/' . $path);
+        if (file_exists($full)) @unlink($full);
     }
 
     private function validateBrand(Request $request): array
