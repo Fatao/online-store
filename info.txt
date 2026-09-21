@@ -1,0 +1,19 @@
+
+2 ND YEAR , 2ND SEMESTER WEB APP DEVELOPMENT PROJECT!
+
+Web Dev Project:    online store 
+
+
+Admin:    admin@example.com  /  password
+
+Customer:   
+
+ivan@mail.ru    :  password
+masha@mail.ru : password
+shasha@mail.ru: password
+ali@mail.ru : password
+mark@mail.ru : password
+
+
+
+$ php -S 127.0.0.1:8001 -t public

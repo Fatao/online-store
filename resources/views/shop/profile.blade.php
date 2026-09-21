@@ -2,7 +2,7 @@
 @section('title', 'Мой профиль')
 @section('content')
 <div style="max-width:680px;margin:48px auto;padding:0 24px;">
-    <div class="section-tag">// Аккаунт</div>
+    <div class="section-tag">Аккаунт</div>
     <h1 class="page-title">Мой профиль</h1>
 
     @if(session('success'))
